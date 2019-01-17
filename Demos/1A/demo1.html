@@ -6,21 +6,39 @@
     <title>330 Demo</title>
     <script>
         "use strict";
-        let b;
-        function doStuff() {
-            console.log("Do Stuff");
-            if (true){
-                var a = 0; // Function scoped
-                b = 10; // Block scoped
-            }
-            console.log("a", a); // Ok
-            console.log("b", b);
-            d = 50; // w/o "use strict", this would go into the global window object
+        // let b;
+        // function doStuff() {
+        //     console.log("Do Stuff");
+        //     if (true){
+        //         var a = 0; // Function scoped
+        //         b = 10; // Block scoped
+        //     }
+        //     console.log("a", a); // Ok
+        //     console.log("b", b);
+        //     d = 50; // w/o "use strict", this would go into the global window object
+        // }
+        // doStuff();
+        function init() {
+            const button = document.querySelector("#button1");
+            button.onclick = function clickButton(e) {
+                // console.log("Clicked");
+                let name = document.querySelector("input").value;
+                displayGreeting(name);
+            };
         }
-        doStuff();
+
+        function displayGreeting() {
+            if (!name) name = "Dan";
+            document.querySelector("p").textContent = `Hello ${name}!`;
+        }
+
+       // window.onload = init;
+       window.addEventListener("load", init);
     </script>
 </head>
 <body>
-    
+    <button id="button1">Click Me!</button>
+    <input placeholder="Enter your name">
+    <p>???</p>
 </body>
 </html>
