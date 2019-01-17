@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>330 Demo</title>
+    <script>
+        "use strict";
+        let b;
+        function doStuff() {
+            console.log("Do Stuff");
+            if (true){
+                var a = 0; // Function scoped
+                b = 10; // Block scoped
+            }
+            console.log("a", a); // Ok
+            console.log("b", b);
+            d = 50; // w/o "use strict", this would go into the global window object
+        }
+        doStuff();
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
