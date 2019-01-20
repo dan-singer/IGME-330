@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Walker-1</title>
+	<style>
+        body{
+            margin: 0;
+            overflow: hidden;
+        }
+	</style>
+	<script>
+
+
+        'use strict';
+		let ctx;
+        let WIDTH, HEIGHT;
+        const WALKERS = 10;
+        const WALKER_WIDTH = 50;
+        let walkers = [];
+
+
+        function makeWalker(x, y, color) {
+            let walker = {
+                x,
+                y,
+                color,
+                width: WALKER_WIDTH,
+                history: [],
+                move(){
+                    if(flipWeightedCoin()){
+                        this.x += flipWeightedCoin() ? -this.width : this.width;
+                    }else{
+                        this.y += flipWeightedCoin() ? -this.width : this.width;
+                    }
+                }
+            };
+            return walker;
+        }
+	
+
+        
+	
+        
+
+		window.onload = function(){
+			// A - canvas variable points at <canvas> tag
+			let canvas = document.querySelector('canvas');
+			
+            WIDTH = window.innerWidth;
+            HEIGHT = window.innerHeight;
+
+            canvas.width = WIDTH;
+            canvas.height = HEIGHT;
+			// B - the ctx variable points at a "2D drawing context"
+			ctx = canvas.getContext('2d');
+
+
+            
+            for (let i = 0; i < WALKERS; ++i){
+                walkers.push(
+                    // Snap to grid
+                    makeWalker( Math.round(getRandomInt(0, WIDTH) / WALKER_WIDTH) * WALKER_WIDTH,
+                                Math.round(getRandomInt(0, HEIGHT) / WALKER_WIDTH) * WALKER_WIDTH,
+                                getRandomColor()
+                    )
+                );
+            }
+			
+			setInterval(drawWalkers,1000/12);
+		}
+		
+		
+        
+		function drawWalkers(){
+            ctx.save();
+
+            cls();
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0,WIDTH, HEIGHT);
+            for (let walker of walkers){
+                walker.history.push({
+                    x: walker.x-walker.width/2,
+                    y: walker.y-walker.width/2,
+                    width: walker.width/2,
+                    height: walker.width/2
+                });
+
+                ctx.fillStyle = walker.color;
+                walker.history.forEach((historyItem, i) => {
+                    ctx.globalAlpha = i / (walker.history.length - 1);
+                    ctx.globalAlpha *= ctx.globalAlpha; // quadratic mapping looks better
+                    ctx.fillRect(historyItem.x, historyItem.y, historyItem.width, historyItem.height);
+                });
+                ctx.globalAlpha = 1;
+
+
+                walker.move();
+            }
+
+            ctx.restore();
+		}
+		
+		// UTILS
+		function getRandomColor(){
+			function getByte(){
+				return 55 + Math.round(Math.random() * 200);
+			}
+			return "rgba(" + getByte() + "," + getByte() + "," + getByte() + ",.8)";
+		}
+
+        function getRandomInt(min, max){
+            return min + Math.floor((max - min + 1) * Math.random());
+        }
+		
+		function cls(){
+			ctx.clearRect(0,0,WIDTH,HEIGHT);
+		}
+		
+		function flipWeightedCoin(weight = 0.5){
+			return Math.random() < weight;
+		}
+	</script>
+</head>
+<body>
+	<canvas>
+		Get a real browser!
+	</canvas>
+</body>
+</html>
