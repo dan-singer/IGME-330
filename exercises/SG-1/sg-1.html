@@ -22,6 +22,21 @@
 		"use strict";
 		// #1 - wait for page to load
 		window.onload = init; 
+
+
+		function drawCircle(ctx,x,y,r,fill,stroke)
+		{
+			ctx.save();
+			ctx.fillStyle = fill;
+			ctx.strokeStyle = stroke;
+			ctx.beginPath();
+			ctx.arc(x,y,r,0,Math.PI*2,false);
+			ctx.closePath();
+			ctx.fill();
+			ctx.stroke();
+			ctx.restore();
+		}
+
 		
 		function init(){
 			console.log("init() called");
@@ -30,25 +45,125 @@
 			
 			// #3 - get pointer to "drawing context" and drawing API
 			let ctx = canvas.getContext('2d');
+
+			const width = 750, height = 500;
+		
+			// Horizon line
+			const horzY = .75*height;
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = "black";
+			ctx.beginPath();
+				ctx.moveTo(0,horzY);
+				ctx.lineTo(width, horzY);
+			ctx.closePath();
+			ctx.stroke();
+
+			// Fill ground
+			ctx.fillStyle = "#2baf53";
+			ctx.fillRect(0,horzY,width,height - horzY);
+
+			//Fill Sky
+			ctx.fillStyle = "#4ac2e2";
+			ctx.fillRect(0,0,width,horzY);
+
+			// Tree
+			const tree = {
+				x: 100, 
+				y: .7*height,
+				barkWidth: 10,
+				barkHeight: 50,
+				barkColor: "brown",
+				leafColor: "green",
+				height: 150,
+				halfWidth: 50
+			};
+			ctx.fillStyle = tree.barkColor;
+			ctx.beginPath();
+				ctx.rect(tree.x, tree.y, tree.barkWidth, tree.barkHeight);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.fillStyle = tree.leafColor;
+			ctx.beginPath();
+				ctx.moveTo(tree.x + tree.barkWidth/2, tree.y - tree.height);
+				ctx.lineTo(tree.x + tree.barkWidth/2 + tree.halfWidth, tree.y);
+				ctx.lineTo(tree.x + tree.barkWidth/2 - tree.halfWidth, tree.y);
+				ctx.fill();
+			ctx.closePath();
+
+			// Smiley face
+			const face = {
+				x: width/2,
+				y: height/2,
+				r: width/4,
+				fill: "yellow",
+				secondaryFill: "black",
+				stroke: "black",
+				get mouthCenter(){
+					return {
+						x: this.x,
+						y: this.y + this.r/4,
+						r: this.r * .65
+					}
+				} 
+			};
+
+			drawCircle(ctx, face.x, face.y, face.r, face.fill, face.stroke);
+			drawCircle(ctx, face.x - face.r/3, face.y - face.r/4, face.r/5, face.secondaryFill, face.stroke);
+			drawCircle(ctx, face.x + face.r/3, face.y - face.r/4, face.r/5, face.secondaryFill, face.stroke);
 			
+			ctx.fillStyle = "black";
+			ctx.beginPath();
+				ctx.arc(face.mouthCenter.x, face.mouthCenter.y, face.mouthCenter.r, 0, Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
+
 			/* #4 - start drawing! */
-			
+			/*
+			ctx.fillStyle = "black";
+			ctx.fillRect(0,0,50,50);
+
+			ctx.fillStyle = "purple";
+			ctx.fillRect(300,300,50,50);
+
+			ctx.strokeStyle = "purple";
+			ctx.strokeRect(300,300,50,50);
+
+			ctx.lineWidth = 5;
+			ctx.beginPath();
+			ctx.moveTo(0,100);
+			ctx.lineTo(100,500);
+			ctx.closePath();
+			ctx.stroke();
+
+			ctx.fillStyle = "black";
+			ctx.beginPath();
+			ctx.arc(0,0,50,0,Math.PI*2);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.fillStyle = "rgba(100%,100%,100%,1)";
+			ctx.beginPath();
+			ctx.arc(200,200,100,0,Math.PI);
+			ctx.closePath();
+			ctx.fill();*/
+
+			/* Examples
 			// draw filled square
 			ctx.fillStyle = "red"; 
 			// ctx.fillRect(x,y,width,height);
 			ctx.fillRect(20,20,100,100);
 			
 			
-			/** 
 			// draw stroked square
 			ctx.strokeStyle="#00FF00"; // any legal CSS color will work for .fillStyle or .strokeStyle
 			ctx.lineWidth=5;
 			// ctx.strokeRect(x,y,width,height);
 			ctx.strokeRect(220,20,100,100);
-			**/
 			
 			
-			/**
+			
+			
 			// fill and stroke circle
 			ctx.fillStyle = "yellow";
 			ctx.beginPath();
@@ -57,9 +172,9 @@
 			ctx.closePath();
  			ctx.fill();
  			ctx.stroke();
- 			**/
  			
-			/**
+ 			
+			
 			// stroke line
 			ctx.lineWidth = 20; 
 			ctx.strokeStyle = "rgb(55, 11, 200)"; // any legal CSS color will work for .fillStyle or .strokeStyle
@@ -68,24 +183,23 @@
 			ctx.lineTo(520, 180); 
 			ctx.closePath(); 
 			ctx.stroke();
-			**/
 			
-			/**
+			
+			
 			// fill text
 			ctx.font = "48px Verdana italic"; // the value of .font must be a valid CSS declaration
 			ctx.fillText("Rich Media Web App Dev I",20,300);
-			**/
 			
 			
-			/**
+			
+			
 			// stroke text
 			ctx.strokeStyle = "purple";
 			ctx.lineWidth = 1; 
 			ctx.strokeText("Rich Media Web App Dev I",20,300);
-			**/
 			
 			
-			/**
+			
 			// Bonus: A Parallelogram
 			ctx.beginPath();
             ctx.moveTo(50, 50); // "pick up" pen and move to top-left corner
@@ -102,7 +216,8 @@
             ctx.strokeStyle="#red";
             ctx.lineWidth=10; 
 			ctx.stroke();
-			**/
+				
+			*/
 			
 			
 		}
