@@ -53,9 +53,18 @@
         ctx.moveTo(100, 100);             	// P0
         ctx.arcTo(300, 425, 550, 100, 80); 	// P1, P2 and the radius
         ctx.lineTo(550, 100);               // top line: line segment between P0 & P2 
-        ctx.stroke();    
         ctx.closePath();
-        ctx.fill();      
+        ctx.fill();
+        ctx.stroke();    
+
+        ctx.setLineDash([0]);
+        ctx.beginPath();
+        ctx.arc(200,200,200,Math.PI*.2,Math.PI*1.8,false);
+        ctx.lineTo(200,200);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
 
         ctx.restore();
 	}
