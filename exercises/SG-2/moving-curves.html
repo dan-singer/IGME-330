@@ -1,0 +1,70 @@
+<html>
+<head>
+	<!--
+		A canvas example from:
+		https://developer.apple.com/library/safari/documentation/AudioVideo/Conceptual/HTML-canvas-guide/DrawingLinesandShapes/DrawingLinesandShapes.html
+		Their coding style is different from what we'll be using in class - use our style, not theirs.
+	-->
+    <title>Simple curve example</title>
+    <style>
+		canvas{
+			background: #ffffff;
+			cursor: pointer;
+			margin-left: 10px;
+			margin-top: 10px;
+			box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+		}
+ 	</style>
+    <script type="text/javascript">
+        var canvas, ctx;
+        let ctrlA = {x: 0, y: 0};
+        let ctrlB1 = {x: 0, y: 0};
+        let ctrlB2 = {x: 0, y: 0};
+        let velocity = {x: 0, y: 0};
+ 
+	function init() {
+		canvas = document.querySelector("canvas");
+		ctx = canvas.getContext("2d");
+		requestAnimationFrame(drawCurves);
+	}
+    function cls()
+    {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+
+   function drawCurves(timestamp) {
+    requestAnimationFrame(drawCurves);
+    cls();
+
+    let time = timestamp / 1000;
+    velocity.x = Math.cos(time) * 5;
+    velocity.y = Math.sin(time) * 5
+
+    ctrlA.x += velocity.x;
+    ctrlA.y += velocity.y;
+
+    ctrlB1.x += velocity.x;
+    ctrlB1.y += velocity.y;
+
+   	ctx.lineWidth="3";
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(ctrlA.x, ctrlA.y, canvas.width, canvas.height);
+    ctx.stroke();
+
+    
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(ctrlB1.x, ctrlB1.y, ctrlB2.x, ctrlB2.y, canvas.width, canvas.height);
+    ctx.stroke();
+}
+
+    </script>
+</head>
+<body onload="init()" style="background-color:#e0e0e0">
+    <canvas height="400" width="600">
+    </canvas>
+</body>
+</html>
