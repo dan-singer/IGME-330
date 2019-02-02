@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Canvas Helpers</title>
+    <style type="text/css">
+    body{
+        margin: 0;
+        overflow: hidden;
+    }
+	canvas{
+		border:1px solid gray;
+	}
+	</style>
+</head>
+<body>
+	<canvas>
+		Get a real browser!
+	</canvas>
+	<script>
+	'use strict';
+
+    
+    function makeArtElement(x,y)
+    {
+        return {
+            x,
+            y
+        };
+    }
+
+
+    let g_canvas;
+    let g_prevTime = 0;
+    let g_rows = 5;
+    let g_rectsPerRow = 100;
+    let g_date = new Date();
+    let g_squareElements = [];
+    let g_colors = ["#AD343E", "#474747", "#F2AF29", "#000000", "#E0E0CE"]
+		
+	init();
+	
+    function resize()
+    {
+        g_canvas.width = window.innerWidth;
+        g_canvas.height = window.innerHeight;
+    }
+
+	function init(){
+        g_canvas = document.querySelector("canvas");
+        window.onresize = resize;
+        resize();
+		let ctx = g_canvas.getContext('2d');
+        for (let row = 0; row < g_rows; ++row){
+            let arr = [];
+            for (let j = 0; j < g_rectsPerRow; ++j){
+                arr.push(makeArtElement((j/g_rectsPerRow) * g_canvas.width, (g_canvas.height/g_rows/2) + (row/g_rows) * g_canvas.height));
+            }
+            g_squareElements.push(arr);
+        }
+
+        requestAnimationFrame((timestamp) => update(ctx,timestamp));
+	}
+	
+	// we took care of drawRectangle() for you - now you need to complete the other 4 functions
+	function drawRectangle(ctx,x=0,y=0,width=25,height=25,rotation=0,fillStyle="red",strokeStyle="black",lineWidth=0){
+		ctx.save();     
+        ctx.translate(x, y);
+        ctx.rotate(rotation);           
+		ctx.beginPath();            
+		ctx.rect(-width/2,-height/2,width,height);   
+		ctx.closePath(); 
+		ctx.fillStyle = fillStyle;
+		ctx.strokeStyle = strokeStyle;    
+		ctx.lineWidth = lineWidth;  
+		ctx.fill();              
+		ctx.stroke();                            
+		ctx.restore();             
+	}
+	
+	function drawCircle(ctx,x=0,y=0,radius=10, fillStyle="red",strokeStyle="black",lineWidth=0,startAngle=0,endAngle=Math.PI*2){
+		ctx.save();
+        ctx.fillStyle = fillStyle;
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, startAngle, endAngle, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+	}
+	
+	function drawLine(ctx,x1=0,y1=0,x2=100,y2=0,strokeStyle="black",lineWidth=2){
+		ctx.save();
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+	}
+	
+	function drawTriangle(ctx,x1=0,y1=0,x2=50,y2=50,x3=-50,y3=50,rotation=0,fillStyle="red",strokeStyle="black",lineWidth=2){
+        ctx.save();
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+
+        let midX = (x1 + x2 + x3) / 3;
+        let midY = (y1 + y2 + y3) / 3;
+
+        ctx.translate(midX, midY); 
+        ctx.rotate(rotation);
+        ctx.beginPath();
+        ctx.moveTo(x1 - midX, y1 - midY);
+        ctx.lineTo(x2 - midX, y2 - midY);
+        ctx.lineTo(x3 - midX, y3 - midY);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+	}
+	
+	function drawArc(ctx,x1=0,y1=0,x2=300,y2=0,cpX=150,cpY=75,fillStyle="red",strokeStyle="black",lineWidth=2){
+        ctx.save();
+        ctx.fillStyle = fillStyle;
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.quadraticCurveTo(cpX, cpY, x2, y2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+	}
+
+    function cls(ctx)
+    {
+        ctx.clearRect(0,0,g_canvas.width,g_canvas.height);
+    }
+
+    function update(ctx, timestamp)
+    {
+        ctx.save();
+        requestAnimationFrame((timestamp) => update(ctx,timestamp));
+        cls(ctx);
+        let dt = (timestamp - g_prevTime) / 1000;
+        let amplitude = 20;
+        let frequencyStep = 100;
+        
+        // Wave squares
+        for (let i = 0; i < g_squareElements.length; ++i)
+        {
+            for (let j = 0; j < g_squareElements[i].length; ++j){
+                drawRectangle(ctx, g_squareElements[i][j].x, g_squareElements[i][j].y + amplitude*Math.sin((timestamp+j*frequencyStep) / 1000),
+                                g_canvas.width / g_squareElements[0].length, g_canvas.height / g_rows, 0, g_colors[i], g_colors[i]
+                );
+            }
+        }
+
+        //Arc
+        drawArc(ctx, 0, 0, g_canvas.width, g_canvas.height, g_canvas.width/2, g_canvas.height/2 + 10*amplitude*Math.cos(timestamp / 1000), g_colors[1]);
+
+        // Shifting circle
+        ctx.save();
+        ctx.translate(g_canvas.width/2,g_canvas.height/2);
+        ctx.rotate( Math.sin(timestamp / 1000));
+        ctx.scale(1 + Math.sin(timestamp / 1000), 1 + Math.cos(timestamp / 1000));
+        let circRadius = 100;
+        drawCircle(ctx, 0, 0, circRadius, g_colors[0], g_colors[1]);
+        ctx.restore();
+
+
+        // Triangles
+        for (let i = 0; i < 20; ++i)
+        {
+            ctx.save();
+            ctx.translate(g_canvas.width/2 + amplitude * 20 *  Math.sin(timestamp / 1000 + i * 500), 50);
+            drawTriangle(ctx, 0, 0, 0, 50, 50, 25);
+            g_prevTime = timestamp;
+            ctx.restore();
+        }
+
+        // Oscilating line
+        drawLine(ctx, 0, g_canvas.height, g_canvas.width, 50 * amplitude * Math.cos(timestamp/1000));
+
+
+        ctx.restore();
+    }
+	
+	</script>
+</body>
+</html>
