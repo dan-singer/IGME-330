@@ -207,6 +207,8 @@
 				// remember we have to draw our bars left-to-right and top-down
 				drawCtx.fillRect(i * (barWidth + barSpacing),topSpacing + 256-audioData[i],barWidth,barHeight); 
 				
+				drawCtx.fillStyle = "rgba(255,0,0,0.6)";
+				drawCtx.fillRect(640 - i * (barWidth + barSpacing), topSpacing + 256 - audioData[i] - 20, barWidth, barHeight);
 			}
 			 
 		} 
