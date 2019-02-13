@@ -53,6 +53,7 @@
     function playLoop(dt) {
         drawCtx.fillStyle = "black";
         drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
+        audio.analyser.get
     }
 
     function pausedLoop(dt) {
