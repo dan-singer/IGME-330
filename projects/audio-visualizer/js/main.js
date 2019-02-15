@@ -12,17 +12,15 @@
         canvas: null
     };
     let audioOptions = {
-        shape: "square"
+        shape: "Circle"
     };
+    let shapeObjects;
     /** @type {CanvasRenderingContext2D} */
     let drawCtx;
     let prevTime = 0;
     let isPlaying = false;
-    let square = null;
+    let gui;
     window.onload = init;
-
-
-
 
     function setupAudioContext() {
         domElements.audio = document.querySelector("audio");
@@ -45,13 +43,25 @@
         window.dispatchEvent(new FocusEvent("resize"));
         drawCtx = domElements.canvas.getContext("2d");
         domElements.canvas.onclick = togglePlay;
+        
+    }
+    function setupShapes() {
+        shapeObjects = {
+            Square: new shapes.Square(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
+            Circle: new shapes.Circle(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
+        }
+    }
+
+    function setupGUI() {
+        gui = new dat.GUI();
+        gui.add(audioOptions, "shape", Object.keys(shapes));
     }
 
     function init() {
         setupAudioContext();
         setupCanvas();
-        square = new shapes.Circle(drawCtx.canvas.width/2, drawCtx.canvas.height/2, 250);
-        
+        setupShapes();
+        setupGUI();
         requestAnimationFrame(update);
     }
 
@@ -66,13 +76,6 @@
         }
     }
 
-    function playLoop(dt) {
-
-    }
-
-    function pausedLoop(dt) {
-
-    }
 
     function update(timestamp) {
         requestAnimationFrame(update);
@@ -80,8 +83,9 @@
 
         drawCtx.fillStyle = "black";
         drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
+
         audio.analyser.getByteFrequencyData(audio.byteFreqData);
-        square.render(drawCtx, audio.byteFreqData);
+        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData);
 
         if (!isPlaying) {
             drawCtx.fillStyle = "black";

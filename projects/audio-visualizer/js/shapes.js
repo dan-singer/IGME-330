@@ -58,22 +58,22 @@ var shapes = (function() {
     }
 
     class Square extends Shape {
-        constructor(x, y, length) {
+        constructor(x, y, radius) {
             super(x, y);
             this.verts = [
-                { x: this.x - length / 2, y: this.y - length / 2 },
-                { x: this.x + length / 2, y: this.y - length / 2 },
-                { x: this.x + length / 2, y: this.y + length / 2 },
-                { x: this.x - length / 2, y: this.y + length / 2 }
+                { x: this.x - radius, y: this.y - radius },
+                { x: this.x + radius, y: this.y - radius },
+                { x: this.x + radius, y: this.y + radius },
+                { x: this.x - radius, y: this.y + radius }
             ];
             // calculate the distance of the entire shape
-            this.shapeLength = length * 4;
+            this.shapeLength = radius * 8;
         }
 
     }
 
     class Circle extends Shape {
-        constructor(x, y, radius, subdivisions = 8) {
+        constructor(x, y, radius, subdivisions = 16) {
             super(x, y); 
             for (let i = 0; i < subdivisions; ++i) {
                 let angle = (i/subdivisions) * (Math.PI * 2);
