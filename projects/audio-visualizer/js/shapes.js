@@ -83,6 +83,23 @@ var shapes = (function() {
             this.shapeLength = 2 * Math.PI * radius;
         }
     }
+    /**
+     * @see https://en.wikipedia.org/wiki/Lemniscate_of_Bernoulli
+     */
+    class InfinityLoop extends Shape {
+        constructor(x, y, a) {
+            super(x, y);
+            let angleStep = Math.PI / 32;
+            const sqrt2 = Math.sqrt(2);
+            for (let i = 0; i <= Math.PI * 2; i += angleStep) {
+                let vertX = x + (a*sqrt2*Math.cos(i)) / (Math.pow(Math.sin(i), 2) + 1);
+                let vertY = y + (a*sqrt2*Math.cos(i)*Math.sin(i)) / (Math.pow(Math.sin(i), 2) + 1);
+                this.verts.push({x:vertX,y:vertY});
+            }
+            this.shapeLength = 7.416*a;
+            console.log(this.verts);
+        }
+    }
 
-    return {Square, Circle};
+    return {Square, Circle, InfinityLoop};
 })();

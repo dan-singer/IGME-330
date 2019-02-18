@@ -12,7 +12,7 @@
         canvas: null
     };
     let audioOptions = {
-        shape: "Circle"
+        shape: "Square"
     };
     let shapeObjects;
     /** @type {CanvasRenderingContext2D} */
@@ -49,6 +49,8 @@
         shapeObjects = {
             Square: new shapes.Square(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
             Circle: new shapes.Circle(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
+            InfinityLoop: new shapes.InfinityLoop(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
+
         }
     }
 
