@@ -1,8 +1,11 @@
 var shapes = (function() {
     class Shape {
-        constructor(x, y) {
+        constructor(x, y, radius) {
             this.x = x;
             this.y = y;
+            this.radius = radius;
+            this.width = 0;
+            this.height = 0;
             this.shapeLength = 0;
             this.verts = [];
         }
@@ -11,10 +14,12 @@ var shapes = (function() {
          * @param {CanvasRenderingContext2D} ctx
          * @param {Uint8Array} freqData
          */
-        render(ctx, freqData) {
-            ctx.strokeStyle = "white";
-            ctx.fillStyle = "white";
-            ctx.lineWidth = 5;
+        render(ctx, freqData, strokeStyle="white", fillStyle="black") {
+            ctx.strokeStyle = strokeStyle;
+            ctx.fillStyle = fillStyle;
+            ctx.save();
+            ctx.lineWidth = 1;
+            ctx.translate(this.x, this.y);
             ctx.beginPath();
             // store a counter representing the current percentage completed
             let curPercentage = 0;
@@ -40,7 +45,7 @@ var shapes = (function() {
                     let perp = { x: line.y, y: -line.x };
                     let perpNorm = veclib.normalize(perp);
                     let multiplier =
-                        (freqData[index] / 255) * 20 * ctx.lineWidth;
+                        (freqData[index] / 255) * this.shapeLength * 0.1;
                     if (isNaN(multiplier)){
                         multiplier = 0;
                     }
@@ -53,34 +58,39 @@ var shapes = (function() {
             }
             ctx.closePath();
             ctx.stroke();
-            //debugger;
+            ctx.fill();
+            ctx.restore();
         }
     }
 
     class Square extends Shape {
         constructor(x, y, radius) {
-            super(x, y);
+            super(x, y, radius);
             this.verts = [
-                { x: this.x - radius, y: this.y - radius },
-                { x: this.x + radius, y: this.y - radius },
-                { x: this.x + radius, y: this.y + radius },
-                { x: this.x - radius, y: this.y + radius }
+                { x: -radius, y: -radius },
+                { x: radius, y: -radius },
+                { x: radius, y: radius },
+                { x: -radius, y: radius }
             ];
             // calculate the distance of the entire shape
             this.shapeLength = radius * 8;
+            this.width = radius * 2;
+            this.height = this.width;
         }
 
     }
 
     class Circle extends Shape {
         constructor(x, y, radius, subdivisions = 16) {
-            super(x, y); 
+            super(x, y, radius); 
             for (let i = 0; i < subdivisions; ++i) {
                 let angle = (i/subdivisions) * (Math.PI * 2);
-                let vert = {x: x + Math.cos(angle) * radius, y: y + Math.sin(angle) * radius};
+                let vert = {x: Math.cos(angle) * radius, y: Math.sin(angle) * radius};
                 this.verts.push(vert);
             }
             this.shapeLength = 2 * Math.PI * radius;
+            this.width = radius * 2;
+            this.height = this.width;
         }
     }
     /**
@@ -88,16 +98,17 @@ var shapes = (function() {
      */
     class InfinityLoop extends Shape {
         constructor(x, y, a) {
-            super(x, y);
+            super(x, y, a);
             let angleStep = Math.PI / 32;
             const sqrt2 = Math.sqrt(2);
             for (let i = 0; i <= Math.PI * 2; i += angleStep) {
-                let vertX = x + (a*sqrt2*Math.cos(i)) / (Math.pow(Math.sin(i), 2) + 1);
-                let vertY = y + (a*sqrt2*Math.cos(i)*Math.sin(i)) / (Math.pow(Math.sin(i), 2) + 1);
+                let vertX = (a*sqrt2*Math.cos(i)) / (Math.pow(Math.sin(i), 2) + 1);
+                let vertY = (a*sqrt2*Math.cos(i)*Math.sin(i)) / (Math.pow(Math.sin(i), 2) + 1);
                 this.verts.push({x:vertX,y:vertY});
             }
             this.shapeLength = 7.416*a;
-            console.log(this.verts);
+            this.width = a * 2;
+            this.height = a * 2; // TODO: Find maximum to figure out what this really is
         }
     }
 

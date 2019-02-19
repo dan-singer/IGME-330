@@ -6,13 +6,6 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
 - Circle
 - Square
 - Infinity Loop
-### Sliders
-- Volume
-- Shape Size
-- Brightness?
-### Checkboxes
-- Sepia Filter
-- Noise
 
 ## Aesthetic
 - Minimalist, with Dat.gui
@@ -29,16 +22,32 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
 
 ## TODO
 - Progress Indicator
-- 2 more sliders
+    - Custom
+- 3 more sliders
+    - Volume
+    - Shape Count
+    - Bass Boost
 - 3 checkboxes
+    - Invert
+    - Gradient Shapes
+    - Noise
 - 1 radio button group
+    - Shape selection
 - 3 distinct audio choices
+    - All custom
 - fullscreen
 - CSS flexbox
+    - Probably use this for audio controls
 - Use ctx.getImageData and ctx.putImageData
+    - Noise
 - bezier and cubic curves
+    - Waveforms in bg
 - gradient
+    - Shapes
 - rectangles
+    - ???
 - waveform data
+    - In background as 
 - audio effect node
+    - bass boost
 - Documentation

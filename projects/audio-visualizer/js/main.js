@@ -13,7 +13,7 @@
     };
     let audioOptions = {
         shape: "Square",
-
+        shapeCount: 1
     };
     let shapeObjects;
     /** @type {CanvasRenderingContext2D} */
@@ -21,6 +21,7 @@
     let prevTime = 0;
     let isPlaying = false;
     let gui;
+    const REF_RADIUS = 20;
     window.onload = init;
 
     function setupAudioContext() {
@@ -44,14 +45,12 @@
         window.dispatchEvent(new FocusEvent("resize"));
         drawCtx = domElements.canvas.getContext("2d");
         domElements.canvas.onclick = togglePlay;
-        
     }
-    function setupShapes() {
-        shapeObjects = {
-            Square: new shapes.Square(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
-            Circle: new shapes.Circle(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
-            InfinityLoop: new shapes.InfinityLoop(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width/8),
 
+    function setupShapes() {
+        shapeObjects = {};
+        for (let key in shapes) {
+            shapeObjects[key] = new shapes[key](0,0,REF_RADIUS);
         }
     }
 
@@ -88,17 +87,20 @@
         drawCtx.fillStyle = "black";
         drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
 
+        drawCtx.save();
+        drawCtx.translate(drawCtx.canvas.width/2, drawCtx.canvas.height/2);
+        // Determine Scale
+        const margin = 200;
+        let scaleMultiplier;
+        if (drawCtx.canvas.width < drawCtx.canvas.height) {
+            scaleMultiplier = (drawCtx.canvas.width - margin) / shapeObjects[audioOptions.shape].width;
+        } else {
+            scaleMultiplier = (drawCtx.canvas.height - margin) / shapeObjects[audioOptions.shape].height;
+        }
+        drawCtx.scale(scaleMultiplier, scaleMultiplier);
         audio.analyser.getByteFrequencyData(audio.byteFreqData);
         shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData);
-
-        if (!isPlaying) {
-            drawCtx.fillStyle = "black";
-            drawCtx.font = "36px Montserrat";
-            drawCtx.fillStyle = "white";
-            const pauseText = "Click to play";
-            let wid = drawCtx.measureText(pauseText).width;
-            drawCtx.fillText(pauseText, drawCtx.canvas.width/2 - wid/2, drawCtx.canvas.height/2 - 18);
-        }
+        drawCtx.restore();
 
         prevTime = timestamp;
     }
