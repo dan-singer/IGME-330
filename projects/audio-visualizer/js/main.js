@@ -12,7 +12,8 @@
         canvas: null
     };
     let audioOptions = {
-        shape: "Square"
+        shape: "Square",
+
     };
     let shapeObjects;
     /** @type {CanvasRenderingContext2D} */
@@ -57,6 +58,7 @@
     function setupGUI() {
         gui = new dat.GUI();
         gui.add(audioOptions, "shape", Object.keys(shapes));
+        gui.add(domElements.audio, "volume", 0, 1);
     }
 
     function init() {
