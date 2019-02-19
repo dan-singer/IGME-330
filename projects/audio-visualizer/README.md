@@ -13,7 +13,6 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
 ### Checkboxes
 - Sepia Filter
 - Noise
-- Something else?
 
 ## Aesthetic
 - Minimalist, with Dat.gui
@@ -27,3 +26,19 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
     - So I should wrap any data inside of an object
 - Dat.GUI
     - The view for the data (UI)
+
+## TODO
+- Progress Indicator
+- 2 more sliders
+- 3 checkboxes
+- 1 radio button group
+- 3 distinct audio choices
+- fullscreen
+- CSS flexbox
+- Use ctx.getImageData and ctx.putImageData
+- bezier and cubic curves
+- gradient
+- rectangles
+- waveform data
+- audio effect node
+- Documentation
