@@ -45,7 +45,7 @@ var shapes = (function() {
                     let perp = { x: line.y, y: -line.x };
                     let perpNorm = veclib.normalize(perp);
                     let multiplier =
-                        (freqData[index] / 255) * this.shapeLength * 0.1;
+                        (freqData[index] / 255) * 5;
                     if (isNaN(multiplier)){
                         multiplier = 0;
                     }
@@ -107,8 +107,8 @@ var shapes = (function() {
                 this.verts.push({x:vertX,y:vertY});
             }
             this.shapeLength = 7.416*a;
-            this.width = a * 2;
-            this.height = a * 2; // TODO: Find maximum to figure out what this really is
+            this.width = a * 2.5;
+            this.height = a * 2.5; // TODO: Find maximum to figure out what this really is
         }
     }
 

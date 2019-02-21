@@ -21,8 +21,7 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
     - The view for the data (UI)
 
 ## TODO
-- Progress Indicator
-    - Custom
+- ~~Progress Indicator~~
 - 3 more sliders
     - Volume
     - Shape Count
@@ -50,4 +49,5 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
     - In background as 
 - audio effect node
     - bass boost
+- ~~Responsive~~
 - Documentation

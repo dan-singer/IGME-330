@@ -2,3 +2,27 @@ body {
     margin: 0;
     overflow: hidden;
 }
+.audio-controls {
+    -webkit-appearance: none;
+    position: fixed;
+    width: 100%;
+    bottom: 20px;
+}
+.audio-controls::-webkit-slider-runnable-track {
+    height: 10px;
+    background: grey;
+    border: 2px solid rgb(66, 66, 66);
+}
+.audio-controls::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 20px;
+    margin-top: -5px;
+    background: rgb(77, 76, 76);
+}
+.audio-controls::-webkit-slider-thumb:hover {
+    border: 1px solid white;
+}
+.audio-controls:focus {
+    outline:none;
+}
