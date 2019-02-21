@@ -24,28 +24,28 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
 - ~~Progress Indicator~~
 - 3 more sliders
     - ~~Volume~~
-    - 
+    - ~~Shape Count~~
     - Bass Boost
 - 3 checkboxes
-    - Invert
-    - Gradient Shapes
-    - Noise
+    - ~~Invert~~
+    - ~~Gradient Shapes~~
+    - ~~Noise~~
 - 1 radio button group
-    - Shape selection
+    - ~~Shape selection~~
 - 3 distinct audio choices
     - All custom
-- fullscreen
+- ~~fullscreen~~
 - CSS flexbox
     - Probably use this for audio controls
-- Use ctx.getImageData and ctx.putImageData
+- ~~Use ctx.getImageData and ctx.putImageData~~
     - Noise
 - bezier and cubic curves
     - Waveforms in bg
-- gradient
+- ~~gradient~~
     - Shapes
 - rectangles
     - ???
-- waveform data
+- ~~waveform data~~
     - In background as 
 - audio effect node
     - bass boost

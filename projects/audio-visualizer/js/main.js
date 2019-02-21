@@ -16,7 +16,11 @@
     };
     let audioOptions = {
         shape: "Square",
-        shapeCount: 1
+        shapeCount: 1,
+        invert: false,
+        noise: false,
+        gradient: true,
+        fullscreen: false
     };
     let shapeObjects;
     /** @type {CanvasRenderingContext2D} */
@@ -86,6 +90,21 @@
         gui.add(audioOptions, "shape", Object.keys(shapes));
         gui.add(domElements.audio, "volume", 0, 1);
         gui.add(audioOptions, "shapeCount", 1, 16).step(1);
+        gui.add(audioOptions, "invert");
+        gui.add(audioOptions, "noise");
+        gui.add(audioOptions, "gradient");
+        let full = gui.add(audioOptions, "fullscreen").listen();
+        full.onFinishChange(value => {
+            if (value) {
+                domElements.canvas.requestFullscreen();
+            }            
+        });
+        document.onfullscreenchange = e => {
+            console.log(document.fullscreenElement);
+            if (!document.fullscreenElement) {
+                audioOptions.fullscreen = false;
+            }
+        };
     }
     
     function play() {
@@ -142,7 +161,8 @@
         shapeGrad.addColorStop(0, "red");
         shapeGrad.addColorStop(0.35, "black");
 
-        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, "#2e2e30", shapeGrad);
+        let fill = audioOptions.gradient ? shapeGrad : "rbga(0,0,0,0)"
+        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, "#2e2e30", fill);
         drawCtx.restore();
     }
 
@@ -192,6 +212,24 @@
             playButton.render(drawCtx, dt);
         drawCtx.restore();
 
+        // Image effects
+        let imgData = drawCtx.getImageData(0,0,drawCtx.canvas.width,drawCtx.canvas.height);
+        for (let i = 0; i < imgData.data.length; i += 4) {
+            if (audioOptions.invert) {
+                for (let j = i; j < i + 3; ++j) {
+                    imgData.data[j] = 255 - imgData.data[j];
+                }
+            }
+            if (audioOptions.noise) {
+                if (Math.random() < .1) {
+                    let amt = 50;
+                    for (let j = i; j < i + 3; ++j) {
+                        imgData.data[j] += amt;
+                    }
+                }
+            }
+        }
+        drawCtx.putImageData(imgData,0,0);
 
         prevTime = timestamp;
     }

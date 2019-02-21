@@ -10,7 +10,7 @@ body {
 }
 .audio-controls::-webkit-slider-runnable-track {
     height: 10px;
-    background: grey;
+    background: red;
     border: 2px solid rgb(66, 66, 66);
 }
 .audio-controls::-webkit-slider-thumb {
@@ -18,7 +18,7 @@ body {
     width: 10px;
     height: 20px;
     margin-top: -5px;
-    background: rgb(77, 76, 76);
+    background: black
 }
 .audio-controls::-webkit-slider-thumb:hover {
     border: 1px solid white;
