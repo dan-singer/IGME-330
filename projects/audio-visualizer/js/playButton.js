@@ -10,26 +10,28 @@ class PlayButton {
     play() {
         this.isTransitioning = true;
         this.isTransitioningBack = false;
-        this.t = 0;
     }
 
     pause() {
         this.isTransitioning = false;
         this.isTransitioningBack = true;
-        this.t = 1;
     }
 
     render(ctx, dt) {
 
         let y = this.length * Math.tan(Math.PI / 6);
         if (this.isTransitioning) {
-            if (this.t < 1)
-                this.t += dt / this.transitionDuration;
+            this.t += dt / this.transitionDuration;
+            if (this.t > 1){
+                this.t = 1;
+            }
             y = y + this.t * -y;
         }
         else if (this.isTransitioningBack) {
-            if (this.t > 0) 
-                this.t -= dt / this.transitionDuration;
+            this.t -= dt / this.transitionDuration;
+            if (this.t < 0) {
+                this.t = 0;
+            }
             y = y + this.t * -y;
         }
 

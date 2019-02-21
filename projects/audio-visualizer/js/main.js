@@ -6,7 +6,8 @@
         /** @type {AnalyserNode} */
         analyser: null,
         source: null,
-        byteFreqData: null
+        byteFreqData: null,
+        waveformData: null
     };
     let domElements = {
         audio: null,
@@ -34,19 +35,19 @@
         domElements.audioControls = document.querySelector(".audio-controls");
 
         let wasPaused = false;
-        domElements.audioControls.onclick = e => {
+        domElements.audioControls.onmousedown = e => {
             wasPaused = domElements.audioControls.paused;
+            pause();
         }
         domElements.audioControls.oninput = e => {
             isScrubbing = true;
             let newTime = e.target.value * domElements.audio.duration;
             domElements.audio.currentTime = newTime;
-            domElements.audio.pause();
         };
         domElements.audioControls.onchange = e=> { 
             isScrubbing = false;
             if (!wasPaused) {
-                domElements.audio.play();
+                play();
             }
         };
 
@@ -57,6 +58,7 @@
         audio.source.connect(audio.analyser);
         audio.analyser.connect(audio.ctx.destination);
         audio.byteFreqData = new Uint8Array(audio.analyser.frequencyBinCount);
+        audio.waveformData = new Uint8Array(audio.analyser.frequencyBinCount);
     }
 
     function setupCanvas() {
@@ -82,6 +84,15 @@
         gui.add(audioOptions, "shape", Object.keys(shapes));
         gui.add(domElements.audio, "volume", 0, 1);
     }
+    
+    function play() {
+        domElements.audio.play();
+        playButton.play();
+    }
+    function pause() {
+        domElements.audio.pause();
+        playButton.pause();
+    }
 
     function init() {
         setupAudioContext();
@@ -92,15 +103,11 @@
     }
 
     function togglePlay(){
-        isPlaying = !isPlaying;
         audio.ctx.resume();
-
-        if (isPlaying) {
-            domElements.audio.play();
-            playButton.play();
+        if (domElements.audio.paused) {
+            play();
         } else {
-            domElements.audio.pause();
-            playButton.pause();
+            pause();
         }
     }
 
@@ -112,6 +119,21 @@
             scaleMultiplier = containerHeight / objectHeight;
         }
         return scaleMultiplier;
+    }
+
+    function drawShape(x, y, containerWidth, containerHeight) {
+        drawCtx.save();
+        drawCtx.translate(drawCtx.canvas.width/2, drawCtx.canvas.height/2);
+        drawCtx.translate(0, -audio.waveformData[audio.waveformData.length/2] * .1);
+        const margin = {x: drawCtx.canvas.width * .2, y: drawCtx.canvas.height * .2};
+        let shapeScale = scaleToFit(
+            drawCtx.canvas.width - margin.x, drawCtx.canvas.height - margin.y,
+            shapeObjects[audioOptions.shape].width, shapeObjects[audioOptions.shape].height 
+        );
+        drawCtx.scale(shapeScale, shapeScale);
+        audio.analyser.getByteFrequencyData(audio.byteFreqData);
+        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData);
+        drawCtx.restore();
     }
 
 
@@ -127,17 +149,24 @@
             domElements.audioControls.value = domElements.audio.currentTime / domElements.audio.duration;
         }
 
-        drawCtx.save();
-            drawCtx.translate(drawCtx.canvas.width/2, drawCtx.canvas.height/2);
-            const shapeMargin = 100;
-            let shapeScale = scaleToFit(
-                drawCtx.canvas.width, drawCtx.canvas.height,
-                shapeObjects[audioOptions.shape].width - shapeMargin, shapeObjects[audioOptions.shape].height - shapeMargin 
-            );
-            drawCtx.scale(shapeScale, shapeScale);
-            audio.analyser.getByteFrequencyData(audio.byteFreqData);
-            shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData);
-        drawCtx.restore();
+        // Waveform
+        audio.analyser.getByteTimeDomainData(audio.waveformData);
+        let height = 50;
+        let width = drawCtx.canvas.width;
+        let centerY = drawCtx.canvas.height / 2;
+        drawCtx.strokeStyle = "white";
+        drawCtx.beginPath();
+        for (let i = 0; i < audio.waveformData.length; ++i) {
+            let x = (i / audio.waveformData.length) * width;
+            let y = (centerY - height/2) + (audio.waveformData[i] / 255) * height;
+            if (i == 0)
+                drawCtx.moveTo(x,y);
+            else
+                drawCtx.lineTo(x,y);
+        }
+        drawCtx.stroke();
+        // Shapes
+
 
         // Play pause button
         drawCtx.save();

@@ -18,7 +18,7 @@ var shapes = (function() {
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
             ctx.save();
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 0.5;
             ctx.translate(this.x, this.y);
             ctx.beginPath();
             // store a counter representing the current percentage completed
