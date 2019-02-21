@@ -24,6 +24,7 @@ class PlayButton {
             this.t += dt / this.transitionDuration;
             if (this.t > 1){
                 this.t = 1;
+                return;
             }
             y = y + this.t * -y;
         }

@@ -15,6 +15,7 @@ var shapes = (function() {
          * @param {Uint8Array} freqData
          */
         render(ctx, freqData, strokeStyle="white", fillStyle="black") {
+
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
             ctx.save();
@@ -44,8 +45,8 @@ var shapes = (function() {
                     );
                     let perp = { x: line.y, y: -line.x };
                     let perpNorm = veclib.normalize(perp);
-                    let multiplier =
-                        (freqData[index] / 255) * 5;
+                    let data = freqData[index] > 20 ? freqData[index] : Math.random() * 10;
+                    let multiplier = (data / 255) * 5;
                     if (isNaN(multiplier)){
                         multiplier = 0;
                     }
@@ -81,7 +82,7 @@ var shapes = (function() {
     }
 
     class Circle extends Shape {
-        constructor(x, y, radius, subdivisions = 16) {
+        constructor(x, y, radius, subdivisions = 60) {
             super(x, y, radius); 
             for (let i = 0; i < subdivisions; ++i) {
                 let angle = (i/subdivisions) * (Math.PI * 2);

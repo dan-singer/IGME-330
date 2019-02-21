@@ -26,6 +26,7 @@
     let gui;
     let isScrubbing = false;
     let playButton = new PlayButton();
+    let shapeGrad;
     const REF_RADIUS = 20;
     window.onload = init;
 
@@ -70,6 +71,7 @@
         window.dispatchEvent(new FocusEvent("resize"));
         drawCtx = domElements.canvas.getContext("2d");
         domElements.canvas.onclick = togglePlay;
+
     }
 
     function setupShapes() {
@@ -83,6 +85,7 @@
         gui = new dat.GUI();
         gui.add(audioOptions, "shape", Object.keys(shapes));
         gui.add(domElements.audio, "volume", 0, 1);
+        gui.add(audioOptions, "shapeCount", 1, 16).step(1);
     }
     
     function play() {
@@ -123,16 +126,23 @@
 
     function drawShape(x, y, containerWidth, containerHeight) {
         drawCtx.save();
-        drawCtx.translate(drawCtx.canvas.width/2, drawCtx.canvas.height/2);
-        drawCtx.translate(0, -audio.waveformData[audio.waveformData.length/2] * .1);
-        const margin = {x: drawCtx.canvas.width * .2, y: drawCtx.canvas.height * .2};
+
+        let shapeObj = shapeObjects[audioOptions.shape];
+
+        drawCtx.translate(x, y);
+        const margin = {x: containerWidth * .2, y: containerHeight * .2};
         let shapeScale = scaleToFit(
-            drawCtx.canvas.width - margin.x, drawCtx.canvas.height - margin.y,
-            shapeObjects[audioOptions.shape].width, shapeObjects[audioOptions.shape].height 
+            containerWidth - margin.x, containerHeight - margin.y,
+            shapeObj.width, shapeObj.height 
         );
         drawCtx.scale(shapeScale, shapeScale);
         audio.analyser.getByteFrequencyData(audio.byteFreqData);
-        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData);
+
+        shapeGrad = drawCtx.createLinearGradient(-shapeObj.width/2, -shapeObj.height/2, shapeObj.width, shapeObj.height);
+        shapeGrad.addColorStop(0, "red");
+        shapeGrad.addColorStop(0.35, "black");
+
+        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, "#2e2e30", shapeGrad);
         drawCtx.restore();
     }
 
@@ -149,12 +159,13 @@
             domElements.audioControls.value = domElements.audio.currentTime / domElements.audio.duration;
         }
 
+
         // Waveform
         audio.analyser.getByteTimeDomainData(audio.waveformData);
         let height = 50;
         let width = drawCtx.canvas.width;
         let centerY = drawCtx.canvas.height / 2;
-        drawCtx.strokeStyle = "white";
+        drawCtx.strokeStyle = "red";
         drawCtx.beginPath();
         for (let i = 0; i < audio.waveformData.length; ++i) {
             let x = (i / audio.waveformData.length) * width;
@@ -165,7 +176,12 @@
                 drawCtx.lineTo(x,y);
         }
         drawCtx.stroke();
-        // Shapes
+
+        for (let i = audioOptions.shapeCount-1; i >= 0; --i){
+            // Go from half to whole
+            let multiplier = 0.5 + (0.5 * ((i+1) / audioOptions.shapeCount));
+            drawShape(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width * multiplier, drawCtx.canvas.height * multiplier);
+        }
 
 
         // Play pause button

@@ -24,7 +24,7 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
 - ~~Progress Indicator~~
 - 3 more sliders
     - ~~Volume~~
-    - Shape Count
+    - 
     - Bass Boost
 - 3 checkboxes
     - Invert
