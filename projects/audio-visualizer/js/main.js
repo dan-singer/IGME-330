@@ -6,6 +6,7 @@
         /** @type {AnalyserNode} */
         analyser: null,
         source: null,
+        biquad: null,
         byteFreqData: null,
         waveformData: null
     };
@@ -15,6 +16,7 @@
         audioControls: null
     };
     let audioOptions = {
+        track: "Finite Platform Shooter.mp3",
         shape: "Square",
         shapeCount: 1,
         invert: false,
@@ -31,17 +33,18 @@
     let isScrubbing = false;
     let playButton = new PlayButton();
     let shapeGrad;
+    const trackNames = ["Beat Saber.mp3", "Fake Estate.wav", "Finite Platform Shooter.mp3", "Jungle Jam.mp3"]
     const REF_RADIUS = 20;
     window.onload = init;
 
     function setupAudioContext() {
         domElements.audio = document.querySelector("audio");
-        domElements.audio.src = "media/beat saber.mp3";
+        domElements.audio.src = `media/${audioOptions.track}`;
         domElements.audioControls = document.querySelector(".audio-controls");
 
         let wasPaused = false;
         domElements.audioControls.onmousedown = e => {
-            wasPaused = domElements.audioControls.paused;
+            wasPaused = domElements.audio.paused;
             pause();
         }
         domElements.audioControls.oninput = e => {
@@ -49,7 +52,7 @@
             let newTime = e.target.value * domElements.audio.duration;
             domElements.audio.currentTime = newTime;
         };
-        domElements.audioControls.onchange = e=> { 
+        domElements.audioControls.onchange = e => { 
             isScrubbing = false;
             if (!wasPaused) {
                 play();
@@ -58,9 +61,13 @@
 
         audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
         audio.analyser = audio.ctx.createAnalyser();
-
         audio.source = audio.ctx.createMediaElementSource(domElements.audio);
-        audio.source.connect(audio.analyser);
+        audio.biquad = audio.ctx.createBiquadFilter();
+        audio.biquad.type = "lowpass";
+        audio.biquad.frequency.value = 24000;
+        
+        audio.source.connect(audio.biquad);
+        audio.biquad.connect(audio.analyser);
         audio.analyser.connect(audio.ctx.destination);
         audio.byteFreqData = new Uint8Array(audio.analyser.frequencyBinCount);
         audio.waveformData = new Uint8Array(audio.analyser.frequencyBinCount);
@@ -74,7 +81,10 @@
         }
         window.dispatchEvent(new FocusEvent("resize"));
         drawCtx = domElements.canvas.getContext("2d");
-        domElements.canvas.onclick = togglePlay;
+        domElements.canvas.onclick = e => {
+            if (!isScrubbing)
+                togglePlay();
+        };
 
     }
 
@@ -87,20 +97,26 @@
 
     function setupGUI() {
         gui = new dat.GUI();
+        let track = gui.add(audioOptions, "track", trackNames);
+        track.onFinishChange(value => {
+            domElements.audio.src = `media/${value}`;
+        });
         gui.add(audioOptions, "shape", Object.keys(shapes));
         gui.add(domElements.audio, "volume", 0, 1);
         gui.add(audioOptions, "shapeCount", 1, 16).step(1);
+        gui.add(audio.biquad.frequency, "value", 200, 24000).step(100).name("lowpass")
         gui.add(audioOptions, "invert");
         gui.add(audioOptions, "noise");
         gui.add(audioOptions, "gradient");
         let full = gui.add(audioOptions, "fullscreen").listen();
         full.onFinishChange(value => {
             if (value) {
-                domElements.canvas.requestFullscreen();
-            }            
+                document.body.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }           
         });
         document.onfullscreenchange = e => {
-            console.log(document.fullscreenElement);
             if (!document.fullscreenElement) {
                 audioOptions.fullscreen = false;
             }
@@ -182,20 +198,34 @@
 
         // Waveform
         audio.analyser.getByteTimeDomainData(audio.waveformData);
-        let height = 50;
-        let width = drawCtx.canvas.width;
-        let centerY = drawCtx.canvas.height / 2;
+
+        // Bezier curves
         drawCtx.strokeStyle = "red";
         drawCtx.beginPath();
-        for (let i = 0; i < audio.waveformData.length; ++i) {
-            let x = (i / audio.waveformData.length) * width;
-            let y = (centerY - height/2) + (audio.waveformData[i] / 255) * height;
-            if (i == 0)
-                drawCtx.moveTo(x,y);
-            else
-                drawCtx.lineTo(x,y);
+        let cpDisp = 50;
+        let points = 100;
+        let prevX, prevY;
+        let centerY = drawCtx.canvas.height/2;
+        let width = drawCtx.canvas.width;
+        let height = drawCtx.canvas.height/8;
+        for (let i = 0; i <= points; ++i) {
+            let x = (i / points) * width;
+            let y = i % 2 == 0 ? centerY - height/2 : centerY + height/2;
+            let freqIndex = parseInt((i / points) * (audio.waveformData.length - 1));
+            let yOffset = audio.waveformData[freqIndex];
+            if (isNaN(yOffset))
+                yOffset = 0;
+            yOffset -= 128;
+            if (i == 0){
+                drawCtx.moveTo(x, y + yOffset);
+            } else {
+                drawCtx.bezierCurveTo(prevX + cpDisp, prevY, x - cpDisp, y, x, y + yOffset);
+            }
+            prevX = x;
+            prevY = y;
         }
         drawCtx.stroke();
+
 
         for (let i = audioOptions.shapeCount-1; i >= 0; --i){
             // Go from half to whole
@@ -215,11 +245,6 @@
         // Image effects
         let imgData = drawCtx.getImageData(0,0,drawCtx.canvas.width,drawCtx.canvas.height);
         for (let i = 0; i < imgData.data.length; i += 4) {
-            if (audioOptions.invert) {
-                for (let j = i; j < i + 3; ++j) {
-                    imgData.data[j] = 255 - imgData.data[j];
-                }
-            }
             if (audioOptions.noise) {
                 if (Math.random() < .1) {
                     let amt = 50;
@@ -228,6 +253,12 @@
                     }
                 }
             }
+            if (audioOptions.invert) {
+                for (let j = i; j < i + 3; ++j) {
+                    imgData.data[j] = 255 - imgData.data[j];
+                }
+            }
+
         }
         drawCtx.putImageData(imgData,0,0);
 
