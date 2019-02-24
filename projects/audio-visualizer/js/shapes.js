@@ -7,6 +7,7 @@ var shapes = (function() {
             this.width = 0;
             this.height = 0;
             this.shapeLength = 0;
+            this.fills = true;
             this.verts = [];
         }
         /**
@@ -19,7 +20,7 @@ var shapes = (function() {
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
             ctx.save();
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = .75;
             ctx.translate(this.x, this.y);
             ctx.beginPath();
             // store a counter representing the current percentage completed
@@ -59,7 +60,8 @@ var shapes = (function() {
             }
             ctx.closePath();
             ctx.stroke();
-            ctx.fill();
+            if (this.fills)
+                ctx.fill();
             ctx.restore();
         }
     }
@@ -109,9 +111,53 @@ var shapes = (function() {
             }
             this.shapeLength = 7.416*a;
             this.width = a * 2.5;
-            this.height = a * 2.5; // TODO: Find maximum to figure out what this really is
+            this.height = a * 2.5;
         }
     }
 
-    return {Square, Circle, InfinityLoop};
+    /**
+     * @see http://www.archimy.com/examples/2d-hypotrochoid.html
+     */
+    class Hypotrochoid extends Shape {
+        constructor(x, y, r) {
+            super(x, y, r);
+            let R = r * 3;
+            let d = R / 2;
+            let angleStep = Math.PI / 32;
+            for (let i = 0, c = 0; i <= Math.PI * 6; i += angleStep, ++c) {
+                let vx = (R - r) * Math.cos(i) + d * Math.cos(((R - r)/r)*i);
+                let vy = (R - r) * Math.sin(i) - d * Math.sin(((R - r)/r)*i);
+                this.verts.push({x:vx, y:vy});
+                if (c > 0) {
+                    this.shapeLength += veclib.dist(this.verts[c - 1], this.verts[c]);
+                }
+            }
+            this.width = R;
+            this.height = R*2; 
+            this.fills = false;
+        }
+    }
+    /**
+     * @see http://jwilson.coe.uga.edu/EMAT6680Su07/Francisco/Assignment10/parametric.html
+     */
+    class LisajousCurve extends Shape {
+        constructor(x, y, r) {
+            super(x, y, r);
+            let a = 12;
+            let b = 13;
+            let angleStep = Math.PI / 32;
+            for (let i = 0, c = 0; i <= 50; i += angleStep, ++c) {
+                let vx = r * Math.sin((a/b)*i);
+                let vy = r * Math.sin(i);
+                this.verts.push({x:vx, y:vy});
+                if (c > 0) {
+                    this.shapeLength += veclib.dist(this.verts[c - 1], this.verts[c]);
+                }
+            }
+            this.width = r * 2;
+            this.height = r * 2; 
+            this.fills = false;
+        }
+    }
+    return {Square, Circle, InfinityLoop, Hypotrochoid, LisajousCurve};
 })();

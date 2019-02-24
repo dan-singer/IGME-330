@@ -28,7 +28,6 @@
     /** @type {CanvasRenderingContext2D} */
     let drawCtx;
     let prevTime = 0;
-    let isPlaying = false;
     let gui;
     let isScrubbing = false;
     let playButton = new PlayButton();
@@ -100,6 +99,7 @@
         let track = gui.add(audioOptions, "track", trackNames);
         track.onFinishChange(value => {
             domElements.audio.src = `media/${value}`;
+            pause();
         });
         gui.add(audioOptions, "shape", Object.keys(shapes));
         gui.add(domElements.audio, "volume", 0, 1);
@@ -159,6 +159,9 @@
         return scaleMultiplier;
     }
 
+    /**
+     * Draws the selected shape centered at (x,y) inside the container size specified
+     */
     function drawShape(x, y, containerWidth, containerHeight) {
         drawCtx.save();
 
@@ -177,7 +180,7 @@
         shapeGrad.addColorStop(0, "red");
         shapeGrad.addColorStop(0.35, "black");
 
-        let fill = audioOptions.gradient ? shapeGrad : "rbga(0,0,0,0)"
+        let fill = audioOptions.gradient ? shapeGrad : "black"
         shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, "#2e2e30", fill);
         drawCtx.restore();
     }
@@ -201,7 +204,7 @@
 
         // Bezier curves
         drawCtx.strokeStyle = "red";
-        drawCtx.beginPath();
+        drawCtx.beginPath(); 
         let cpDisp = 50;
         let points = 100;
         let prevX, prevY;

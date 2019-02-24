@@ -34,7 +34,7 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
     - ~~Shape selection~~
 - ~~3 distinct audio choices~~
 - ~~fullscreen~~
-- CSS flexbox
+- ~~CSS flexbox~~
     - Probably use this for audio controls
 - ~~Use ctx.getImageData and ctx.putImageData~~
     - Noise
@@ -42,12 +42,14 @@ This audio visualizer will consist of audio frequencies / waveforms moving along
     - Waveforms in bg
 - ~~gradient~~
     - Shapes
-- rectangles
+-~~ rectangles~~
     - ???
 - ~~waveform data~~
     - In background as 
 - ~~audio effect node~~
     - bass boost
 - ~~Responsive~~
+- ~~More shapes~~
+- ~~Fix change audio bug~~
 - Refactor
 - Documentation

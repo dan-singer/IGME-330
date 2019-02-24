@@ -2,6 +2,9 @@ var veclib = (function(){
     function distSqr(vec) {
         return (Math.pow(vec.x, 2) + Math.pow(vec.y, 2));
     }
+    function dist(A, B) {
+        return magnitude(subVectors(A, B));
+    }
     function magnitude(vec) {
         return Math.sqrt(distSqr(vec));
     }
@@ -19,5 +22,5 @@ var veclib = (function(){
         let AtoB = subVectors(B, A);
         return {x: A.x + t * AtoB.x, y: A.y + t * AtoB.y };
     }
-    return {distSqr, magnitude, subVectors, normalize, lerp};
+    return {distSqr, magnitude, subVectors, normalize, lerp, dist};
 })();
