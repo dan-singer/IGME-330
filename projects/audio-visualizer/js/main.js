@@ -185,24 +185,11 @@
         drawCtx.restore();
     }
 
-
-    function update(timestamp) {
-        requestAnimationFrame(update);
-        let dt = (timestamp - prevTime) / 1000;
-
-        drawCtx.fillStyle = "black";
-        drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
-
-        // Update audio controls
-        if (!isScrubbing) {
-            domElements.audioControls.value = domElements.audio.currentTime / domElements.audio.duration;
-        }
-
-
+    function drawWaveformData()
+    {
         // Waveform
         audio.analyser.getByteTimeDomainData(audio.waveformData);
-
-        // Bezier curves
+        drawCtx.save();
         drawCtx.strokeStyle = "red";
         drawCtx.beginPath(); 
         let cpDisp = 50;
@@ -228,24 +215,11 @@
             prevY = y;
         }
         drawCtx.stroke();
-
-
-        for (let i = audioOptions.shapeCount-1; i >= 0; --i){
-            // Go from half to whole
-            let multiplier = 0.5 + (0.5 * ((i+1) / audioOptions.shapeCount));
-            drawShape(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width * multiplier, drawCtx.canvas.height * multiplier);
-        }
-
-
-        // Play pause button
-        drawCtx.save();
-            let playScale = scaleToFit(drawCtx.canvas.width/4, drawCtx.canvas.height/4, playButton.length, playButton.length);
-            drawCtx.translate(drawCtx.canvas.width/2,drawCtx.canvas.height/2);
-            drawCtx.scale(playScale, playScale);
-            playButton.render(drawCtx, dt);
         drawCtx.restore();
+    }
 
-        // Image effects
+    function applyImageEffects()
+    {
         let imgData = drawCtx.getImageData(0,0,drawCtx.canvas.width,drawCtx.canvas.height);
         for (let i = 0; i < imgData.data.length; i += 4) {
             if (audioOptions.noise) {
@@ -264,7 +238,39 @@
 
         }
         drawCtx.putImageData(imgData,0,0);
+    }
 
+
+    function update(timestamp) {
+        requestAnimationFrame(update);
+        let dt = (timestamp - prevTime) / 1000;
+
+        drawCtx.fillStyle = "black";
+        drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
+
+        // Update audio controls
+        if (!isScrubbing) {
+            domElements.audioControls.value = domElements.audio.currentTime / domElements.audio.duration;
+        }
+
+        drawWaveformData();
+
+        // Draw shapes
+        for (let i = audioOptions.shapeCount-1; i >= 0; --i){
+            // Go from half to whole
+            let multiplier = 0.5 + (0.5 * ((i+1) / audioOptions.shapeCount));
+            drawShape(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width * multiplier, drawCtx.canvas.height * multiplier);
+        }
+
+        // Play/pause button
+        drawCtx.save();
+            let playScale = scaleToFit(drawCtx.canvas.width/4, drawCtx.canvas.height/4, playButton.length, playButton.length);
+            drawCtx.translate(drawCtx.canvas.width/2,drawCtx.canvas.height/2);
+            drawCtx.scale(playScale, playScale);
+            playButton.render(drawCtx, dt);
+        drawCtx.restore();
+
+        applyImageEffects();
         prevTime = timestamp;
     }
 })();
