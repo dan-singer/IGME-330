@@ -17,9 +17,8 @@ var shapes = (function() {
          * @param {CanvasRenderingContext2D} ctx
          * @param {Uint8Array} freqData
          */
-        render(ctx, freqData, dt, strokeStyle="white", fillStyle="black") {
+        render(ctx, freqData, strokeStyle="white", fillStyle="black") {
             ctx.save();
-            this.rotation += this.rotationVel * dt; 
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
             ctx.lineWidth = .75;
@@ -67,6 +66,10 @@ var shapes = (function() {
             if (this.fills)
                 ctx.fill();
             ctx.restore();
+        }
+
+        rotate(dt) {
+            this.rotation += this.rotationVel * dt;
         }
     }
 
