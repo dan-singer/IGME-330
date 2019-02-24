@@ -38,6 +38,7 @@ class PlayButton {
 
         ctx.save();
         ctx.strokeStyle = "red";
+        ctx.fillStyle = "black";
         ctx.lineWidth = "1";
         ctx.beginPath();
         ctx.moveTo(this.length/2, 0);
@@ -45,6 +46,7 @@ class PlayButton {
         ctx.lineTo(-this.length/2, y);
         ctx.closePath();
         ctx.stroke();
+        ctx.fill();
         ctx.restore();
     }
 }

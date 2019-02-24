@@ -17,7 +17,7 @@
     };
     let audioOptions = {
         track: "Finite Platform Shooter.mp3",
-        shape: "Square",
+        shape: "Hypotrochoid",
         shapeCount: 1,
         invert: false,
         noise: false,
@@ -162,7 +162,7 @@
     /**
      * Draws the selected shape centered at (x,y) inside the container size specified
      */
-    function drawShape(x, y, containerWidth, containerHeight) {
+    function drawShape(x, y, containerWidth, containerHeight, dt) {
         drawCtx.save();
 
         let shapeObj = shapeObjects[audioOptions.shape];
@@ -181,7 +181,7 @@
         shapeGrad.addColorStop(0.35, "black");
 
         let fill = audioOptions.gradient ? shapeGrad : "black"
-        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, "#2e2e30", fill);
+        shapeObjects[audioOptions.shape].render(drawCtx, audio.byteFreqData, dt, "#2e2e30", fill);
         drawCtx.restore();
     }
 
@@ -256,10 +256,22 @@
         drawWaveformData();
 
         // Draw shapes
+        let bg = {
+            x: drawCtx.canvas.width/2,
+            y: drawCtx.canvas.height/2,
+            width: drawCtx.canvas.width/2,
+            height: drawCtx.canvas.height/2
+        };
+        let radialGrad = drawCtx.createRadialGradient(bg.x, bg.y, 0, bg.x, bg.y, bg.width > bg.height ? bg.width : bg.height);
+        radialGrad.addColorStop(0, "black");
+        radialGrad.addColorStop(.5, "rgba(0,0,0,0)");
+
+        drawCtx.fillStyle = radialGrad;
+        drawCtx.fillRect(bg.x - bg.width/2, bg.y - bg.height/2, bg.width, bg.height);
         for (let i = audioOptions.shapeCount-1; i >= 0; --i){
             // Go from half to whole
             let multiplier = 0.5 + (0.5 * ((i+1) / audioOptions.shapeCount));
-            drawShape(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width * multiplier, drawCtx.canvas.height * multiplier);
+            drawShape(drawCtx.canvas.width/2, drawCtx.canvas.height/2, drawCtx.canvas.width * multiplier, drawCtx.canvas.height * multiplier, dt);
         }
 
         // Play/pause button

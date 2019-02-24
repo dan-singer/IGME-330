@@ -9,19 +9,23 @@ var shapes = (function() {
             this.shapeLength = 0;
             this.fills = true;
             this.verts = [];
+            this.rotation = 0;
+            this.rotationVel = Math.PI / 64;
         }
         /**
          * Render the shape using webaudio data
          * @param {CanvasRenderingContext2D} ctx
          * @param {Uint8Array} freqData
          */
-        render(ctx, freqData, strokeStyle="white", fillStyle="black") {
-
+        render(ctx, freqData, dt, strokeStyle="white", fillStyle="black") {
+            ctx.save();
+            this.rotation += this.rotationVel * dt; 
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
-            ctx.save();
             ctx.lineWidth = .75;
+            ctx.lineCap = "round";
             ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
             ctx.beginPath();
             // store a counter representing the current percentage completed
             let curPercentage = 0;
@@ -146,7 +150,7 @@ var shapes = (function() {
             let a = 12;
             let b = 13;
             let angleStep = Math.PI / 32;
-            for (let i = 0, c = 0; i <= 50; i += angleStep, ++c) {
+            for (let i = 0, c = 0; i <= Math.PI * 18; i += angleStep, ++c) {
                 let vx = r * Math.sin((a/b)*i);
                 let vy = r * Math.sin(i);
                 this.verts.push({x:vx, y:vy});
@@ -154,6 +158,7 @@ var shapes = (function() {
                     this.shapeLength += veclib.dist(this.verts[c - 1], this.verts[c]);
                 }
             }
+            this.verts.push({x:this.verts[0].x, y:this.verts[0].y});
             this.width = r * 2;
             this.height = r * 2; 
             this.fills = false;
