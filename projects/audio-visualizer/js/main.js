@@ -223,6 +223,7 @@
         // Waveform
         audio.analyser.getByteTimeDomainData(audio.waveformData);
         drawCtx.save();
+
         drawCtx.strokeStyle = "red";
         drawCtx.beginPath(); 
         let cpDisp = 50;
@@ -284,7 +285,14 @@
         requestAnimationFrame(update);
         let dt = (timestamp - prevTime) / 1000;
 
-        drawCtx.fillStyle = "black";
+
+        let bgGrad = drawCtx.createLinearGradient(0,0,drawCtx.canvas.width,drawCtx.canvas.height);
+        bgGrad.addColorStop(0, "red");
+        bgGrad.addColorStop(.1, "black");
+        bgGrad.addColorStop(.9, "black");
+        bgGrad.addColorStop(1, "red");
+
+        drawCtx.fillStyle = audioOptions.gradient ? bgGrad : "black";
         drawCtx.fillRect(0,0,drawCtx.canvas.width, drawCtx.canvas.height);
 
         // Update audio controls

@@ -31,7 +31,7 @@ var shapes = (function() {
             ctx.save();
             ctx.strokeStyle = strokeStyle;
             ctx.fillStyle = fillStyle;
-            ctx.lineWidth = .75;
+            ctx.lineWidth = .5;
             ctx.lineCap = "round";
             ctx.translate(this.x, this.y);
             ctx.rotate(this.rotation);
@@ -115,7 +115,7 @@ var shapes = (function() {
     class Circle extends Shape {
         /**
          * Construct a circle
-         * @param {*} subdivisions number of subdivisions used to generate the circle 
+         * @param {Number} subdivisions number of subdivisions used to generate the circle 
          */
         constructor(x, y, radius, subdivisions = 60) {
             super(x, y, radius); 
