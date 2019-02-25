@@ -191,7 +191,7 @@ var shapes = (function() {
             let a = 12;
             let b = 13;
             let angleStep = Math.PI / 32;
-            for (let i = 0, c = 0; i <= Math.PI * 18; i += angleStep, ++c) {
+            for (let i = 0, c = 0; i <= 200; i += angleStep, ++c) {
                 let vx = r * Math.sin((a/b)*i);
                 let vy = r * Math.sin(i);
                 this.verts.push({x:vx, y:vy});
