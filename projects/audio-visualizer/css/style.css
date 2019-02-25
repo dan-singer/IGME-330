@@ -3,11 +3,15 @@ body {
     overflow: hidden;
     font-family: "Montserrat";
 }
+canvas{
+    z-index: 0;
+}
 .audio-controls {
     -webkit-appearance: none;
     position: fixed;
     width: 100%;
     bottom: 2vh;
+    z-index: 1;
 }
 .audio-controls::-webkit-slider-runnable-track {
     height: 10px;
@@ -61,7 +65,7 @@ a:visited {
         height: 100vh;
     }
     header > div:first-child {
-        margin-bottom: 40px;
+        margin-bottom: 10vh;
     }
     header > div {
         margin: 0;

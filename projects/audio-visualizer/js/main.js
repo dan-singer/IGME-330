@@ -309,7 +309,7 @@
             width: drawCtx.canvas.width/2,
             height: drawCtx.canvas.height/2
         };
-        let radialGrad = drawCtx.createRadialGradient(bg.x, bg.y, 0, bg.x, bg.y, bg.width > bg.height ? bg.width : bg.height);
+        let radialGrad = drawCtx.createRadialGradient(bg.x, bg.y, 0, bg.x, bg.y, bg.width);
         radialGrad.addColorStop(0, "black");
         radialGrad.addColorStop(.5, "rgba(0,0,0,0)");
         drawCtx.fillStyle = radialGrad;
