@@ -1,5 +1,15 @@
+/**
+ * Collection of shapes used by shape.viz
+ */
 var shapes = (function() {
+
+    /**
+     * Parent shape class
+     */
     class Shape {
+        /**
+         * Construct a shape at a location with radius r
+         */
         constructor(x, y, radius) {
             this.x = x;
             this.y = y;
@@ -68,12 +78,21 @@ var shapes = (function() {
             ctx.restore();
         }
 
+        /**
+         * Rotate the shape based on its rotationVel property
+         */
         rotate(dt) {
             this.rotation += this.rotationVel * dt;
         }
     }
 
+    /**
+     * Square shape
+     */
     class Square extends Shape {
+        /**
+         * Construct a square at x,y with radius
+         */
         constructor(x, y, radius) {
             super(x, y, radius);
             this.verts = [
@@ -90,7 +109,14 @@ var shapes = (function() {
 
     }
 
+    /**
+     * Circle shape
+     */
     class Circle extends Shape {
+        /**
+         * Construct a circle
+         * @param {*} subdivisions number of subdivisions used to generate the circle 
+         */
         constructor(x, y, radius, subdivisions = 60) {
             super(x, y, radius); 
             for (let i = 0; i < subdivisions; ++i) {
@@ -104,9 +130,13 @@ var shapes = (function() {
         }
     }
     /**
+     * Infinity Loop curve
      * @see https://en.wikipedia.org/wiki/Lemniscate_of_Bernoulli
      */
     class InfinityLoop extends Shape {
+        /**
+         * Construct an infinity loop
+         */
         constructor(x, y, a) {
             super(x, y, a);
             let angleStep = Math.PI / 32;
@@ -123,9 +153,13 @@ var shapes = (function() {
     }
 
     /**
+     * Hypotrochoid curve
      * @see http://www.archimy.com/examples/2d-hypotrochoid.html
      */
     class Hypotrochoid extends Shape {
+        /**
+         * Construct an Hypotrochoid curve
+         */
         constructor(x, y, r) {
             super(x, y, r);
             let R = r * 3;
@@ -145,9 +179,13 @@ var shapes = (function() {
         }
     }
     /**
+     * Lisajous Curve
      * @see http://jwilson.coe.uga.edu/EMAT6680Su07/Francisco/Assignment10/parametric.html
      */
     class LisajousCurve extends Shape {
+        /**
+         * Construct a Lisajous Curve
+         */
         constructor(x, y, r) {
             super(x, y, r);
             let a = 12;

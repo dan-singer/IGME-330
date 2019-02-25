@@ -1,3 +1,6 @@
+/**
+ * audio.viz main application
+ */
 (function(){
     
     let audio = {
@@ -36,6 +39,9 @@
     const REF_RADIUS = 20;
     window.onload = init;
 
+    /**
+     * Sets up the audio context and audio controls
+     */
     function setupAudioContext() {
         domElements.audio = document.querySelector("audio");
         domElements.audio.src = `media/${audioOptions.track}`;
@@ -72,6 +78,9 @@
         audio.waveformData = new Uint8Array(audio.analyser.frequencyBinCount);
     }
 
+    /**
+     * Sets up the canvas
+     */
     function setupCanvas() {
         domElements.canvas = document.querySelector("canvas");
         window.onresize = e => {
@@ -87,6 +96,9 @@
 
     }
 
+    /**
+     * Sets up the shapeObjects dictionary
+     */
     function setupShapes() {
         shapeObjects = {};
         for (let key in shapes) {
@@ -94,6 +106,9 @@
         }
     }
 
+    /**
+     * Sets up dat.gui and its event handlers
+     */
     function setupGUI() {
         gui = new dat.GUI();
         let track = gui.add(audioOptions, "track", trackNames);
@@ -123,15 +138,24 @@
         };
     }
     
+    /**
+     * Play the audio 
+     */
     function play() {
         domElements.audio.play();
         playButton.play();
     }
+    /**
+     * Pause the audio
+     */
     function pause() {
         domElements.audio.pause();
         playButton.pause();
     }
 
+    /**
+     * Called when window has loaded
+     */
     function init() {
         setupAudioContext();
         setupCanvas();
@@ -140,6 +164,9 @@
         requestAnimationFrame(update);
     }
 
+    /**
+     * Pauses or unpauses the audio, based on its current state
+     */
     function togglePlay(){
         audio.ctx.resume();
         if (domElements.audio.paused) {
@@ -149,6 +176,9 @@
         }
     }
 
+    /**
+     * Returns a number which, when used to scale the object, will cause it to scale to fit inside of the container
+     */
     function scaleToFit(containerWidth, containerHeight, objectWidth, objectHeight) {
         let scaleMultiplier;
         if (containerWidth < containerHeight) {
@@ -185,6 +215,9 @@
         drawCtx.restore();
     }
 
+    /**
+     * Draw the waveform data using bezier curves
+     */
     function drawWaveformData()
     {
         // Waveform
@@ -218,6 +251,9 @@
         drawCtx.restore();
     }
 
+    /**
+     * Apply image effects to the screen
+     */
     function applyImageEffects()
     {
         let imgData = drawCtx.getImageData(0,0,drawCtx.canvas.width,drawCtx.canvas.height);
@@ -241,6 +277,9 @@
     }
 
 
+    /**
+     * Main update loop
+     */
     function update(timestamp) {
         requestAnimationFrame(update);
         let dt = (timestamp - prevTime) / 1000;

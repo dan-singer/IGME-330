@@ -1,4 +1,10 @@
+/**
+ * Represents the play/pause button
+ */
 class PlayButton {
+    /**
+     * Construct a new play button
+     */
     constructor() {
         this.length = 100;
         this.transitionDuration = 0.25;
@@ -7,16 +13,27 @@ class PlayButton {
         this.t = 0;
     }
 
+    /**
+     * Kick off the play animation
+     */
     play() {
         this.isTransitioning = true;
         this.isTransitioningBack = false;
     }
 
+    /**
+     * Kick off the pause animation
+     */
     pause() {
         this.isTransitioning = false;
         this.isTransitioningBack = true;
     }
 
+    /**
+     * Render the play button
+     * @param {CanvasRenderingContext2D} ctx 
+     * @param {Number} dt 
+     */
     render(ctx, dt) {
 
         let y = this.length * Math.tan(Math.PI / 6);
