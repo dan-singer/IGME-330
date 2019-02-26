@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Load Text - &lt;input></title>
+    <style>
+        body{font-family:sans-serif;}
+	</style>
+</head>
+
+<body>
+    <h1>Load Text - <code>&lt;input></code> element</h1>
+    <section>
+        <p><input id="input" type="text" size="50" maxlength="50" autofocus value="It was a dark and stormy night ..." /></p>
+        <p id="output"></p>
+    </section>
+    <script>
+        let input = document.querySelector("#input");
+        let output = document.querySelector("#output");
+
+        input.oninput = doInput; // called whenever the content of the field changes
+        input.onchange = doChange; // called when the field loses focus or when the return key is pressed
+        input.dispatchEvent(new Event("input")); // calls doInput() when the page first loads
+
+        function doInput(e) {
+            let text = e.target.value;
+
+            // indexof
+            let index = text.indexOf("dark");
+            output.innerHTML = index;
+
+            // substring
+            let sub = text.substring(0, 5);
+            output.innerHTML = sub;
+
+            // replace
+            let regex = /dark/gi; // g means all occurences, i means case insensitive
+            let regex2 = /[.,\/#!$%\^&\*;:{}=\-_`~()?'"]+/g;  // get rid of all repetions of all of these characters
+            text = text.replace(regex, '');
+            text = text.replace(regex2, '');
+            output.innerHTML = text;
+
+        }
+
+        function doChange(e) {
+            output.innerHTML = "The input field no longer has focus, or you hit `return`!";
+        }
+
+    </script>
+</body>
+
+</html>
