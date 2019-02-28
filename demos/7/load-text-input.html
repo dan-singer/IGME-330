@@ -35,10 +35,19 @@
             output.innerHTML = sub;
 
             // replace
-            let regex = /dark/gi; // g means all occurences, i means case insensitive
-            let regex2 = /[.,\/#!$%\^&\*;:{}=\-_`~()?'"]+/g;  // get rid of all repetions of all of these characters
+            //let regex = /dark/gi; // g means all occurences, i means case insensitive
+            let regex = /[.,\/#!$%\^&\*;:{}=\-_`~()?'"]+/g;  // get rid of all repetions of all of these characters
             text = text.replace(regex, '');
-            text = text.replace(regex2, '');
+            //output.innerHTML = text;
+
+            text = text.toLowerCase().split(" ");
+            text.reverse();
+            // text = text.join(" ");
+            // text = text.toLowerCase();
+
+            text.sort();
+            text = text.join(" ");
+
             output.innerHTML = text;
 
         }
