@@ -40,6 +40,9 @@
         // Returns true if the string is a palindrome, false otherwise        
         function isPalindrome(str) {
             str = str.replace(/\W/gm, "").toLowerCase();
+            if (str.length == 0) {
+                return false;
+            }
             let reversed = str.split("").reverse().join("");
             return reversed == str;
         }
