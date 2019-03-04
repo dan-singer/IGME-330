@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible">
+    <title>Palindrome Detector</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        p {
+            font-weight: bold;
+        }
+        .palindrome {
+            color: green;
+        }
+        .not-palindrome {
+            color: red;
+        }
+    </style>
+    <script>
+        window.onload = init; 
+        function init() {
+            let input = document.querySelector("#pal-input");
+            let result = document.querySelector("#result");
+
+            input.oninput = e => {
+                if (isPalindrome(e.target.value)) {
+                    result.textContent = "It's a palindrome! :-)";
+                    result.className = "palindrome";
+                } 
+                else {
+                    result.textContent = "Not a palindrome! :-|";
+                    result.className = "not-palindrome";
+                }
+            };
+        }
+
+        // Returns true if the string is a palindrome, false otherwise        
+        function isPalindrome(str) {
+            str = str.replace(/\W/gm, "").toLowerCase();
+            let reversed = str.split("").reverse().join("");
+            return reversed == str;
+        }
+
+    </script>
+</head>
+<body>
+    <h1>Palindrome Detector</h1>
+    <input id="pal-input" type="text" />
+    <p id="result"></p>
+</body>
+</html>
