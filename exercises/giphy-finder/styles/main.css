@@ -23,6 +23,11 @@
  
 #content {
     display: flex;
+    flex-wrap: wrap;
+}
+
+#content > p {
+    flex: 1 1 100%;
 }
 
  .result {
