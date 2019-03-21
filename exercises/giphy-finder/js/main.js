@@ -26,7 +26,7 @@ function searchButtonClicked() {
     let limit = document.querySelector("#limit").value;
     url += "&limit=" + limit;
 
-    document.querySelector("#status").innerHTML = "<b>Searching for '" + displayTerm + "'</b>";
+    // document.querySelector("#status").innerHTML = "<b>Searching for '" + displayTerm + "'</b>";
     getData(url);
 }
 
