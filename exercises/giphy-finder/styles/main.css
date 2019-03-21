@@ -24,6 +24,12 @@
 #content {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+}
+
+#content > * {
+    margin: 10px;
+    flex: 0 1 20vw;
 }
 
 #content > p {
@@ -35,6 +41,7 @@
 }
 
 .result img {
+    width: 100%;
     height: auto;
 }
 

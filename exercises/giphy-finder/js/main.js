@@ -50,12 +50,12 @@ function dataLoaded(e) {
     }
 
     let results = obj.data;
-    console.log("results.length = " + results.length);
     let bigString = `<p><i>Here are ${results.length} results for '${displayTerm}'</i></p>`;
     for (let i = 0; i < results.length; ++i) {
         let result = results[i];
+        console.log(result);
 
-        let smallURL = result.images.fixed_width_small.url;
+        let smallURL = result.images.original.url;
         if (!smallURL) smallURL = "images/no-image-found.png";
         let url = result.url;
         let line = `<div class='result'><img src='${smallURL}' title='${result.id}' />`;
