@@ -2,7 +2,7 @@
 /** 
  * 1.) OK
  * 2.) The dom did not finish loading yet so myH1 is pointing to null
- * 3.) TODO lookup "use strict"
+ * 3.) Makes it impossible to accidentally create global variables and provides more errors than in sloppy mode
 */
 //4
 function multiply(a, b) {
@@ -22,8 +22,8 @@ function six() {
  * 7.) C
  * 8.) A
  * 9.) C
- * 10.) TODO lookup Object.seal
- * 11.) TODO lookup Object.freeze
+ * 10.) prevents new properties being added to an object
+ * 11.) prevents new properties being added to it, existing properties from being removed, and prevents values oif exisintg properties to be changed
  * 12.) anything js primitive type or object
  * 13.) unsigned 8 bit integers
  * 14.) undefined
@@ -103,10 +103,20 @@ function twentyNine() {
     ctx.stroke();
 }
 function thirty() {
-    
+    ctx.rotate(2);
 }
-
-
+/**
+ * 31.) Save takes a snapshot of the current drawing state and pushes it onto a stack. 
+ * Restore pops from that stack - restoring the drawing state to what it was when pushed
+ * 
+ * 32.) red
+ * 33.) raster based images are based on bitmaps and do not scale well
+ * 34.) Vector images are based on mathematical formulas and can thus be scaled
+ * 35.) raster
+ * 36.) Object.create makes an object based off of another object used as the prototype
+ * 37.) Copies an object's own properties from a source to a target object
+ * 38.) Inspect is live, view source is not
+ */
 
 
 /* Interview Questions */
