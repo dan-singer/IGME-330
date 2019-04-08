@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+      button {
+        position: absolute;
+        color: red;
+        font-weight: bold;
+        height: 30px;
+        width: 130px;
+        z-index: 100
+      }
+      #worldZoomButton {
+        top: 70px;
+        left: 10px;
+      }
+      #defaultZoomButton {
+        top: 110px;
+        left: 10px;
+      }
+      #buildingZoomButton {
+        top: 150px;
+        left: 10px;
+      }
+      #isometricZoomButton {
+        top: 190px;
+        left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <p><button id="worldZoomButton">World Zoom (1)</button></p>
+    <p><button id="defaultZoomButton">Default Zoom (16)</button></p>
+    <p><button id="buildingZoomButton">Building Zoom (20)</button></p>
+    <p><button id="isometricZoomButton">Isometric View (18)</button></p>
+    <script src="coffee-data.js"></script>
+    <script src="building-data.js"></script>
+    <script>
+      let map;
+      let infowindow;
+      function initMap() {
+        let mapOptions = {
+          center: {lat: 43.083848, lng: -77.6799},
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        map.mapTypeId = "satellite";
+        map.setTilt(45);
+
+        document.querySelector("#worldZoomButton").onclick = () => {
+          map.setZoom(1);
+        };
+        document.querySelector("#defaultZoomButton").onclick = () => {
+          map.setZoom(16);
+        };
+        document.querySelector("#buildingZoomButton").onclick = () => {
+          map.setZoom(20);
+        };
+        document.querySelector("#isometricZoomButton").onclick = () => {
+          map.setZoom(18);
+        };
+
+        for (let shop of coffeeShops) {
+          addMarker(shop.latitude, shop.longitude, shop.title);
+        }
+        for (let building of buildings) {
+          drawPolygon(building.path, building.title);
+        }
+      }
+
+      function addMarker(latitude, longitude, title) {
+        let position = {lat: latitude, lng: longitude};
+        let marker = new google.maps.Marker({position: position, map: map});
+        marker.setTitle(title);
+        google.maps.event.addListener(marker, "click", e => {
+          makeInfoWindow(marker.position, marker.title);
+        });
+      }
+
+      function makeInfoWindow(position, msg) {
+        if (infowindow) infowindow.close();
+        // Make a new infowindow
+        infowindow = new google.maps.InfoWindow({
+          map: map,
+          position: position,
+          content: `<b>${msg}</b>`
+        });
+      }
+
+      function drawPolygon(paths, title) {
+        let polygon = new google.maps.Polygon({
+          paths: paths,
+          strokeColor: "green",
+          fillColor: "purple"
+        });
+        polygon.setMap(map);
+        google.maps.event.addListener(polygon, "click", e => {
+          makeInfoWindow(paths[0], title);
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmuCKpRCcSj_ztQAKHSxeZPCCxg9dwtzA&callback=initMap"
+    async defer></script>
+  </body>
+</html>
