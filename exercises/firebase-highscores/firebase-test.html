@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test</title>
+    <script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyA3iaxlzhSvL0mrXt7WCeRQgT10doE1IB8",
+            authDomain: "high-scores-23262.firebaseapp.com",
+            databaseURL: "https://high-scores-23262.firebaseio.com",
+            projectId: "high-scores-23262",
+            storageBucket: "",
+            messagingSenderId: "522421743584"
+        };
+        firebase.initializeApp(config);
+
+        console.log(firebase);
+        let database = firebase.database();
+
+        let scoresRef = database.ref("scores");
+        let data = {
+            id: 0,
+            score: 0
+        };
+        let newScoreRef = scoresRef.push(data);
+        console.log(newScoreRef.id);
+        console.log(newScoreRef.toString());
+
+        let usersRef = database.ref("users");
+        usersRef.push({
+            id: 0,
+            firstName: "Joe",
+            lastName: "Schmoe"
+        });
+        usersRef.push({
+            id: 1,
+            firstName: "Larry",
+            lastName: "Barry"
+        });
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>High Score App</title>
+        <style>
+            * {
+                font-family: monospace;
+                font-size: 1.2em;
+            }
+            #scoreElement {
+                font-size: 3em;
+                width: 5em;
+                height: 2.5em;
+                color: white;
+                background-color: black;
+                border: 5px solid gray;
+                text-align: center;
+                padding-top: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="scoreElement">0</p>
+        <p>Name --> <input type="text" value="MADMAX" id="nameField" /></p>
+        <button id="clickMeButton">Click Me!</button>
+        <button id="saveScoreButton">Save High Score</button>
+
+        <!-- #1 - link to Firebase goes here  -->
+        <script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+
+        <script type="module">
+            /* #2 - The rest of the Firebase setup code goes here */
+            var config = {
+                apiKey: "AIzaSyA3iaxlzhSvL0mrXt7WCeRQgT10doE1IB8",
+                authDomain: "high-scores-23262.firebaseapp.com",
+                databaseURL: "https://high-scores-23262.firebaseio.com",
+                projectId: "high-scores-23262",
+                storageBucket: "",
+                messagingSenderId: "522421743584"
+            };
+            firebase.initializeApp(config);
+
+            console.log(firebase); // #3 - make sure firebase is loaded
+
+            let score = 0;
+            let clickMeButton = document.querySelector("#clickMeButton");
+            let saveScoreButton = document.querySelector("#saveScoreButton");
+            let nameField = document.querySelector("#nameField");
+            clickMeButton.onclick = _ => {
+                score++;
+                scoreElement.innerText = score;
+            };
+            saveScoreButton.onclick = e => {
+                /*firebase.database().ref("scores").push({
+                    userID: nameField.value,
+                    score: score
+                })*/
+                let path = `scores2/${nameField.value}`;
+                firebase.database().ref(path).set({
+                    userID: nameField.value,
+                    score: score
+                });
+            };
+        </script>
+    </body>
+</html>

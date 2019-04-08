@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Firebase Admin</title>
+    </head>
+    <body>
+        <h1>High Scores</h1>
+        <ol id="scoresList">
+            <li>No data yet!</li>
+        </ol>
+        <h1 id="MADMAX-score"></h1>
+
+        <!-- #1 - link to Firebase goes here  -->
+        <script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+
+        <script>
+            /* #2 - The rest of the Firebase setup code goes here */
+            var config = {
+                apiKey: "AIzaSyA3iaxlzhSvL0mrXt7WCeRQgT10doE1IB8",
+                authDomain: "high-scores-23262.firebaseapp.com",
+                databaseURL: "https://high-scores-23262.firebaseio.com",
+                projectId: "high-scores-23262",
+                storageBucket: "",
+                messagingSenderId: "522421743584"
+            };
+            firebase.initializeApp(config);
+            console.log(firebase); // #3 - make sure firebase is loaded
+
+            let scoresList = document.querySelector("#scoresList");
+            let madMaxScore = document.querySelector("#MADMAX-score");
+
+            // #4 This is where the magic happens!
+            firebase
+                .database()
+                .ref("scores2")
+                .on("value", dataChanged, firebaseError);
+            firebase
+                .database()
+                .ref("scores2/MADMAX")
+                .on("value", data => {
+                    let obj = data.val();
+                    madMaxScore.textContent = `MADMAX's Score: ${obj.score}`;
+                }, firebaseError)
+
+            function dataChanged(data) {
+                let obj = data.val();
+                console.log(obj);
+                let bigString = "";
+                let keys = Object.keys(obj);
+                keys.sort((a, b) => obj[b].score - obj[a].score);
+                for (let key of keys) {
+                    let row = obj[key];
+                    bigString += `<li>${row.userID} : ${row.score}</li>`;
+                    console.log(row);
+                }
+                scoresList.innerHTML = bigString;
+            }
+
+            function firebaseError(error) {
+                console.log(error);
+            }
+        </script>
+    </body>
+</html>
