@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Data Binding - Hard</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <input type="text" id="input" v-model="message">
+        <p id="output">The value of data.message is "{{ message }}"</p>
+    </div>
+
+    <script>
+        let data = {
+            message: "Hello world"
+        };
+        const app = new Vue({
+            data: data,
+            el: "#root"
+        })
+    </script>
+</body>
+
+</html>

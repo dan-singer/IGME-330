@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Data Binding - Hard</title>
+</head>
+
+<body>
+    <div id="root">
+        <input type="text" id="input">
+        <p id="output">???</p>
+    </div>
+
+    <script>
+        let data = {
+            _message: "Hello world",
+            get message() {
+                return this._message;
+            },
+            set message(val) {
+                this._message = val;
+                showMessage();
+                input.value = this._message;
+            }
+        };
+        let input = document.querySelector("#input");
+        input.value = data.message;
+        input.oninput = e => {
+            data.message = e.target.value;
+            showMessage();
+        };
+        function showMessage() {
+            document.querySelector("#output").innerHTML = `The value of data.message is ${data.message}`;
+        }
+        showMessage();
+    </script>
+</body>
+
+</html>
