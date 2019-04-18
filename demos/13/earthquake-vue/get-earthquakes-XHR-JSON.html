@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Get Earthquakes - Vue Version</title>
+	<link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
+	<style>
+		* {
+			font-family: sans-serif;
+		}
+
+		header {
+			background-color: crimson;
+			margin: 0;
+			padding-left: 5px;
+		}
+
+		h1 {
+			font-size: 4.5em;
+			font-family: "Audiowide";
+			margin-top: 0;
+			margin-bottom: 0;
+			color: black;
+			letter-spacing: .025em;
+		}
+
+		h2 {
+			font-size: 1.5em;
+			font-family: "Audiowide";
+			margin-top: 0;
+			color: #eee;
+			letter-spacing: .04em;
+			white-space: nowrap;
+		}
+
+		section>div {
+			background-color: #ccc;
+			margin: 1em;
+			padding: .5em;
+		}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+	<div id="root">
+		<header>
+			<h1>{{ title }}</h1>
+			<h2 v-html="description"></h2>
+		</header>
+		<p>We're going to look for recent magnitude 1.0+ earthquakes that happened near RIT's Golisano hall in the last week!</p>
+		<p><i><small>Here we are using XHR to fetch JSON from the <a href="http://earthquake.usgs.gov/fdsnws/event/1/">USGS
+						Earthquake Catalog.</a></small></i></p>
+		<p><i><small>Check out the console to see the HTTP response headers, the loading events that are getting logged, and
+					how much smaller the JSON file size is when compared with the XML example. Try choosing a larger distance from the
+					&lt;select> to see more of these events in the console.</small></i></p>
+
+		<hr>
+		<p id='status'><i>Status: {{ status }}</i></p>
+		<p>
+			<button id="search" @click="search">Search!</button> &nbsp;&nbsp;How close by? -->
+			<select id="distance" v-model="distance">
+				<option value="200">200km</option>
+				<option value="400">400km</option>
+				<option value="600">600km</option>
+				<option value="800">800km</option>
+				<option value="1000">1000km</option>
+				<option value="2000">2000km</option>
+				<option value="5000">5000km</option>
+			</select>
+		</p>
+		<p id="debug" v-html="debug"></p>
+		<hr>
+		<h3>Results:</h3>
+		<section v-for="quake of quakes">
+			<quake-div :title="quake.title" :url="quake.url" :longitude="quake.longitude" :latitude="quake.latitude"></quake-div>
+		</section>
+	</div>
+
+
+	<script>
+		const URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&minmagnitude=1.0&orderby=magnitude";
+		const GOLISANO_HALL = {
+			latitude: 43.084156,
+			longitude: -77.67514
+		};
+
+		Vue.component("quake-div", {
+			props: ["title", "url", "longitude", "latitude"],
+			template:
+			`
+			<div>
+				<h4>{{ title }}({{ latitude }}, {{ longitude }})</h4>
+				<p><a target="_blank" v-bind:href="url">{{ url }}</a></p>
+			</div>
+			`
+		})
+
+		const app = new Vue({
+			el: "#root",
+			data: {
+				title: "QuākFndr",
+				description: "The earthquake reporting tool you can trust&reg;",
+				distance: "1000",
+				status: "Ready to search!",
+				results: "???",
+				debug: "",
+				quakes: []
+			},
+			methods: {
+				search() {
+
+					this.quakes = [];
+
+
+					// today's date
+					let now = new Date();
+					let nowYear = now.getFullYear();
+					let nowMonth = now.getMonth() + 1;
+					let nowDate = now.getDate();
+
+					// yesterday's date
+					let lastWeek = new Date();
+					lastWeek.setDate(lastWeek.getDate() - 7);
+					let lastWeekYear = lastWeek.getFullYear();
+					let lastWeekMonth = lastWeek.getMonth() + 1;
+					let lastWeekDate = lastWeek.getDate();
+
+					// build url
+
+					let url = URL;
+					url += "&latitude=" + GOLISANO_HALL.latitude;
+					url += "&longitude=" + GOLISANO_HALL.longitude;
+					url += "&maxradiuskm=" + this.distance;
+
+					// starttime=2016-01-01&endtime=2016-01-02
+					url += "&starttime=" + lastWeekYear + "-" + lastWeekMonth + "-" + lastWeekDate;
+					url += "&endtime=" + nowYear + "-" + nowMonth + "-" + nowDate;
+					this.status = "Search Initiated!";
+					this.results = "???";
+
+					let xhr = new XMLHttpRequest();
+					xhr.onload = this.jsonLoaded;
+					xhr.onprogress = (e) => {
+						let xhr = e.target;
+						if (!xhr.loggedHeaders) {
+							console.log("HEADERS_RECEIVED: " + xhr.getAllResponseHeaders());
+							xhr.loggedHeaders = true; // only log the headers once
+						}
+						console.log(`PROGRESS: xhr.readyState = ${xhr.readyState}, loaded = ${e.loaded}`);
+					}
+					xhr.onerror = (e) => console.log(`ERROR: ${e}`);
+
+					// xhr.open(method, url, async, user, password)
+					xhr.open("GET", url, true);
+					xhr.send();
+
+					// show URL to web service
+					this.debug = `Loading: <a href='${url}'>${url}</a>`;
+				},
+				jsonLoaded(e) {
+					let xhr = e.target;
+					console.log(`LOADED: xhr.readyState = ${xhr.readyState}, loaded = ${e.loaded}`);
+					if (xhr.readyState != xhr.DONE) return;
+
+					let responseText = xhr.responseText;
+					console.log(`HTTP status code: ${xhr.status}`);
+					//console.log(`responseText: ${responseText}`);
+
+					let obj = JSON.parse(responseText);
+					let count = obj.metadata.count;
+					this.status = count + " earthquakes found!";
+
+					// bail out if there are no results
+					if (!count) return;
+
+					//  build up a list of the results
+					let earthquakes = obj.features;
+					for (let quake of earthquakes) {
+						let properties = quake.properties;
+						let title = properties.title;
+						let url = properties.url;
+						let longitude = quake.geometry.coordinates[0];
+						let latitude = quake.geometry.coordinates[1];
+						this.quakes.push({
+							title, url, longitude, latitude
+						});
+					};
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>
